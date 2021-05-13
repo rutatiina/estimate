@@ -3,6 +3,7 @@
 namespace Rutatiina\Estimate\Http\Controllers;
 
 use Rutatiina\Estimate\Services\EditService;
+use Rutatiina\Estimate\Services\EstimateService;
 use Rutatiina\Estimate\Services\StoreService;
 use URL;
 use PDF;
@@ -126,13 +127,13 @@ class EstimateController extends Controller
     public function store(Request $request)
     {
         //print_r($request->all()); exit;
-        $storeService = StoreService::run($request);
+        $storeService = EstimateService::store($request);
 
         if ($storeService == false)
         {
             return [
                 'status' => false,
-                'messages' => StoreService::$errors
+                'messages' => EstimateService::$errors
             ];
         }
 
@@ -172,7 +173,7 @@ class EstimateController extends Controller
             return view('l-limitless-bs4.layout_2-ltr-default.appVue');
         }
 
-        $txnAttributes = EditService::run($id);
+        $txnAttributes = EstimateService::edit($id);
 
         $data = [
             'pageTitle' => 'Edit Estimate', #required
@@ -191,15 +192,13 @@ class EstimateController extends Controller
     {
         //print_r($request->all()); exit;
 
-        $TxnStore = new TxnUpdate();
-        $TxnStore->txnInsertData = $request->all();
-        $insert = $TxnStore->run();
+        $storeService = EstimateService::update($request);
 
-        if ($insert == false)
+        if ($storeService == false)
         {
             return [
                 'status' => false,
-                'messages' => $TxnStore->errors
+                'messages' => EstimateService::$errors
             ];
         }
 
@@ -207,15 +206,15 @@ class EstimateController extends Controller
             'status' => true,
             'messages' => ['Estimate updated'],
             'number' => 0,
-            'callback' => URL::route('estimates.show', [$insert->id], false)
+            'callback' => URL::route('estimates.show', [$storeService->id], false)
         ];
     }
 
     public function destroy($id)
     {
-        $delete = Estimate::delete($id);
+        $destroy = EstimateService::destroy($id);
 
-        if ($delete)
+        if ($destroy)
         {
             return [
                 'status' => true,
@@ -226,7 +225,7 @@ class EstimateController extends Controller
         {
             return [
                 'status' => false,
-                'message' => implode('<br>', array_values(Transaction::$rg_errors))
+                'message' => EstimateService::$errors
             ];
         }
     }
