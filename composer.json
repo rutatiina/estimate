@@ -1,0 +1,24 @@
+{
+    "name": "rutatiina/estimate",
+    "description": "Laravel Package to manage estimates",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gilbert Rutatiina",
+            "email": "rutatiina@ruginem.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "app/Helpers/Helper.php",
+            "app/Helpers/Permissions.php",
+            "app/Helpers/Activity.php"
+        ],
+        "psr-4": {
+            "Rutatiina\\Estimate\\": "src/"
+        }
+    }
+}
