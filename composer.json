@@ -9,14 +9,11 @@
             "email": "rutatiina@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
-    "require": {},
+    "minimum-stability": "beta",
+    "require": {
+        "laravel/framework": "^8.0"
+    },
     "autoload": {
-        "files": [
-            "app/Helpers/Helper.php",
-            "app/Helpers/Permissions.php",
-            "app/Helpers/Activity.php"
-        ],
         "psr-4": {
             "Rutatiina\\Estimate\\": "src/"
         }
