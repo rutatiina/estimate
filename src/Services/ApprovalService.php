@@ -2,8 +2,8 @@
 
 namespace Rutatiina\Estimate\Services;
 
-use Rutatiina\FinancialAccounting\Services\AccountBalanceService;
-use Rutatiina\FinancialAccounting\Services\ContactBalanceService;
+use Rutatiina\FinancialAccounting\Services\AccountBalanceUpdateService;
+use Rutatiina\FinancialAccounting\Services\ContactBalanceUpdateService;
 
 trait ApprovalService
 {
@@ -18,10 +18,10 @@ trait ApprovalService
         //$this->inventory(); //currentlly inventory update for estimates is disabled
 
         //Update the account balances
-        AccountBalanceService::update($data['ledgers']);
+        AccountBalanceUpdateService::singleEntry($data);
 
         //Update the contact balances
-        ContactBalanceService::update($data['ledgers']);
+        ContactBalanceUpdateService::singleEntry($data);
 
         return true;
     }

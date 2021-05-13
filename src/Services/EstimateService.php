@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Rutatiina\Estimate\Models\Estimate;
 use Rutatiina\Estimate\Models\EstimateItem;
 use Rutatiina\Estimate\Models\EstimateItemTax;
-use Rutatiina\FinancialAccounting\Services\AccountBalanceService;
-use Rutatiina\FinancialAccounting\Services\ContactBalanceService;
+use Rutatiina\FinancialAccounting\Services\AccountBalanceUpdateService;
+use Rutatiina\FinancialAccounting\Services\ContactBalanceUpdateService;
 use Rutatiina\Tax\Models\Tax;
 
 class EstimateService
@@ -135,9 +135,6 @@ class EstimateService
             //Save the items >> $data['items']
             EstimateItemService::store($data);
 
-            //Save the ledgers >> $data['ledgers']; and update the balances
-            //NOTE >> no need to update ledgers since this is not an accounting entry
-
             //check status and update financial account and contact balances accordingly
             ApprovalService::run($data);
 
@@ -187,7 +184,7 @@ class EstimateService
 
         try
         {
-            $Txn = Estimate::with('items', 'ledgers')->findOrFail($data['id']);
+            $Txn = Estimate::with('items')->findOrFail($data['id']);
 
             if ($Txn->status == 'Approved')
             {
@@ -196,15 +193,15 @@ class EstimateService
             }
 
             //Delete affected relations
-            $Txn->ledgers()->delete();
             $Txn->items()->delete();
             $Txn->item_taxes()->delete();
+            $Txn->comments()->delete();
 
             //reverse the account balances
-            AccountBalanceService::update($Txn->ledgers, true);
+            AccountBalanceUpdateService::singleEntry($Txn, true);
 
             //reverse the contact balances
-            ContactBalanceService::update($Txn->ledgers, true);
+            ContactBalanceUpdateService::singleEntry($Txn, true);
 
             $Txn->tenant_id = $data['tenant_id'];
             $Txn->created_by = Auth::id();
@@ -239,9 +236,6 @@ class EstimateService
 
             //Save the items >> $data['items']
             EstimateItemService::store($data);
-
-            //Save the ledgers >> $data['ledgers']; and update the balances
-            //NOTE >> no need to update ledgers since this is not an accounting entry
 
             //check status and update financial account and contact balances accordingly
             ApprovalService::run($data);
@@ -292,15 +286,16 @@ class EstimateService
             }
 
             //Delete affected relations
-            $Txn->ledgers()->delete();
             $Txn->items()->delete();
             $Txn->item_taxes()->delete();
 
+            $data = $Txn->toArray();
+
             //reverse the account balances
-            AccountBalanceService::update($Txn->ledgers, true);
+            AccountBalanceUpdateService::singleEntry($data, true);
 
             //reverse the contact balances
-            ContactBalanceService::update($Txn->ledgers, true);
+            ContactBalanceUpdateService::singleEntry($data, true);
 
             $Txn->delete();
 

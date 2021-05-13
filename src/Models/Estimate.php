@@ -57,9 +57,6 @@ class Estimate extends Model
              $txn->comments()->each(function($row) {
                 $row->delete();
              });
-             $txn->ledgers()->each(function($row) {
-                $row->delete();
-             });
         });
 
     }
@@ -90,7 +87,6 @@ class Estimate extends Model
         $attributes['debit_account'] = [];
         $attributes['credit_account'] = [];
         $attributes['items'] = [];
-        $attributes['ledgers'] = [];
         $attributes['comments'] = [];
         $attributes['debit_contact'] = [];
         $attributes['credit_contact'] = [];
@@ -115,7 +111,6 @@ class Estimate extends Model
         return ucfirst($f->format($this->total));
     }
 
-
     public function financial_account()
     {
         return $this->hasOne('Rutatiina\FinancialAccounting\Models\Account', 'code', 'financial_account_code');
@@ -124,11 +119,6 @@ class Estimate extends Model
     public function items()
     {
         return $this->hasMany('Rutatiina\Estimate\Models\EstimateItem', 'estimate_id')->orderBy('id', 'asc');
-    }
-
-    public function ledgers()
-    {
-        return $this->hasMany('Rutatiina\Estimate\Models\EstimateLedger', 'estimate_id')->orderBy('id', 'asc');
     }
 
     public function comments()

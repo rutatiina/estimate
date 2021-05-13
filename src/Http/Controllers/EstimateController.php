@@ -2,11 +2,9 @@
 
 namespace Rutatiina\Estimate\Http\Controllers;
 
-use Rutatiina\Estimate\Services\EditService;
 use Rutatiina\Estimate\Services\EstimateService;
-use Rutatiina\Estimate\Services\StoreService;
-use URL;
-use PDF;
+use Illuminate\Support\Facades\URL;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Http\Request;
@@ -17,12 +15,8 @@ use Rutatiina\FinancialAccounting\Traits\FinancialAccountingTrait;
 use Rutatiina\Item\Traits\ItemsVueSearchSelect;
 use Yajra\DataTables\Facades\DataTables;
 
-use Rutatiina\Estimate\Classes\Store as TxnStore;
-use Rutatiina\Estimate\Classes\Update as TxnUpdate;
 use Rutatiina\Estimate\Classes\Approve as TxnApprove;
-use Rutatiina\Estimate\Classes\Read as TxnRead;
 use Rutatiina\Estimate\Classes\Copy as TxnCopy;
-use Rutatiina\Estimate\Classes\Edit as TxnEdit;
 use Rutatiina\Estimate\Classes\Number as TxnNumber;
 use Rutatiina\Estimate\Traits\Item as TxnItem;
 
@@ -218,14 +212,15 @@ class EstimateController extends Controller
         {
             return [
                 'status' => true,
-                'message' => 'Estimate deleted',
+                'messages' => ['Estimate deleted'],
+                'callback' => URL::route('estimates.index', [], false)
             ];
         }
         else
         {
             return [
                 'status' => false,
-                'message' => EstimateService::$errors
+                'messages' => EstimateService::$errors
             ];
         }
     }
