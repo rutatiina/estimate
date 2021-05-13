@@ -177,10 +177,7 @@ class EstimateController extends Controller
             'txnAttributes' => $txnAttributes, #required
         ];
 
-        if (FacadesRequest::wantsJson())
-        {
-            return $data;
-        }
+        return $data;
     }
 
     public function update(Request $request)

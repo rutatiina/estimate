@@ -31,7 +31,7 @@ class ValidateService
             'contact_id' => 'required|numeric',
             'date' => 'required|date',
             'base_currency' => 'required',
-            'document_id' => 'numeric|nullable',
+            'expiry_date' => 'date|nullable',
             'salesperson_contact_id' => 'numeric|nullable',
             'memo' => 'string|nullable',
 
