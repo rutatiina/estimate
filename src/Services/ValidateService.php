@@ -93,6 +93,8 @@ class ValidateService
         $data['memo'] = $requestInstance->input('memo', null);
         $data['status'] = $requestInstance->input('status', null);
 
+        //print_r($data); exit;
+
 
         //set the transaction total to zero
         $txnTotal = 0;
