@@ -2,7 +2,7 @@
 
 namespace Rutatiina\Estimate\Http\Controllers;
 
-use Rutatiina\Estimate\Services\EstimateService;
+use Rutatiina\Estimate\Services\SalesOrderService;
 use Illuminate\Support\Facades\URL;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Facades\Auth;
@@ -116,13 +116,13 @@ class EstimateController extends Controller
     {
         //print_r($request->all()); exit;
 
-        $storeService = EstimateService::store($request);
+        $storeService = SalesOrderService::store($request);
 
         if ($storeService == false)
         {
             return [
                 'status' => false,
-                'messages' => EstimateService::$errors
+                'messages' => SalesOrderService::$errors
             ];
         }
 
@@ -162,7 +162,7 @@ class EstimateController extends Controller
             return view('l-limitless-bs4.layout_2-ltr-default.appVue');
         }
 
-        $txnAttributes = EstimateService::edit($id);
+        $txnAttributes = SalesOrderService::edit($id);
 
         $data = [
             'pageTitle' => 'Edit Estimate', #required
@@ -178,13 +178,13 @@ class EstimateController extends Controller
     {
         //print_r($request->all()); exit;
 
-        $storeService = EstimateService::update($request);
+        $storeService = SalesOrderService::update($request);
 
         if ($storeService == false)
         {
             return [
                 'status' => false,
-                'messages' => EstimateService::$errors
+                'messages' => SalesOrderService::$errors
             ];
         }
 
@@ -198,7 +198,7 @@ class EstimateController extends Controller
 
     public function destroy($id)
     {
-        $destroy = EstimateService::destroy($id);
+        $destroy = SalesOrderService::destroy($id);
 
         if ($destroy)
         {
@@ -212,7 +212,7 @@ class EstimateController extends Controller
         {
             return [
                 'status' => false,
-                'messages' => EstimateService::$errors
+                'messages' => SalesOrderService::$errors
             ];
         }
     }
@@ -222,13 +222,13 @@ class EstimateController extends Controller
 
     public function approve($id)
     {
-        $approve = EstimateService::approve($id);
+        $approve = SalesOrderService::approve($id);
 
         if ($approve == false)
         {
             return [
                 'status' => false,
-                'messages' => EstimateService::$errors
+                'messages' => SalesOrderService::$errors
             ];
         }
 
@@ -246,7 +246,7 @@ class EstimateController extends Controller
             return view('l-limitless-bs4.layout_2-ltr-default.appVue');
         }
 
-        $txnAttributes = EstimateService::copy($id);
+        $txnAttributes = SalesOrderService::copy($id);
 
         $data = [
             'pageTitle' => 'Copy Estimate', #required
