@@ -50,11 +50,6 @@ class EstimateService
         $attributes['contact_notes'] = null;
         $attributes['terms_and_conditions'] = null;
 
-        unset($attributes['txn_entree_id']); //!important
-        unset($attributes['txn_type_id']); //!important
-
-        //print_r($attributes['items']); exit;
-
         foreach ($attributes['items'] as $key => $item)
         {
             $selectedItem = [
