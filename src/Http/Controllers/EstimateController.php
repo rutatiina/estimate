@@ -15,16 +15,10 @@ use Rutatiina\FinancialAccounting\Traits\FinancialAccountingTrait;
 use Rutatiina\Item\Traits\ItemsVueSearchSelect;
 use Yajra\DataTables\Facades\DataTables;
 
-use Rutatiina\Estimate\Classes\Approve as TxnApprove;
-use Rutatiina\Estimate\Classes\Copy as TxnCopy;
-use Rutatiina\Estimate\Classes\Number as TxnNumber;
-use Rutatiina\Estimate\Traits\Item as TxnItem;
-
 class EstimateController extends Controller
 {
     use FinancialAccountingTrait;
     use ItemsVueSearchSelect;
-    use TxnItem;
 
     // >> get the item attributes template << !!important
 
@@ -228,14 +222,13 @@ class EstimateController extends Controller
 
     public function approve($id)
     {
-        $TxnApprove = new TxnApprove();
-        $approve = $TxnApprove->run($id);
+        $approve = EstimateService::approve($id);
 
         if ($approve == false)
         {
             return [
                 'status' => false,
-                'messages' => $TxnApprove->errors
+                'messages' => EstimateService::$errors
             ];
         }
 
@@ -243,7 +236,6 @@ class EstimateController extends Controller
             'status' => true,
             'messages' => ['Estimate Approved'],
         ];
-
     }
 
     public function copy($id)
@@ -254,23 +246,16 @@ class EstimateController extends Controller
             return view('l-limitless-bs4.layout_2-ltr-default.appVue');
         }
 
-        $TxnCopy = new TxnCopy();
-        $txnAttributes = $TxnCopy->run($id);
-
-        $TxnNumber = new TxnNumber();
-        $txnAttributes['number'] = $TxnNumber->run($this->txnEntreeSlug);
+        $txnAttributes = EstimateService::copy($id);
 
         $data = [
             'pageTitle' => 'Copy Estimate', #required
             'pageAction' => 'Copy', #required
-            'txnUrlStore' => '/financial-accounts/sales/estimates', #required
+            'txnUrlStore' => '/estimates', #required
             'txnAttributes' => $txnAttributes, #required
         ];
 
-        if (FacadesRequest::wantsJson())
-        {
-            return $data;
-        }
+        return $data;
     }
 
     public function datatables(Request $request)

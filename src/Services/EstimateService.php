@@ -323,4 +323,103 @@ class EstimateService
         }
     }
 
+    public static function copy($id)
+    {
+        $taxes = Tax::all()->keyBy('code');
+
+        $txn = Estimate::findOrFail($id);
+        $txn->load('contact', 'items.taxes');
+        $txn->setAppends(['taxes']);
+
+        $attributes = $txn->toArray();
+
+        #reset some values
+        $attributes['date'] = date('Y-m-d');
+        $attributes['expiry_date'] = '';
+        #reset some values
+
+        $attributes['contact']['currency'] = $attributes['contact']['currency_and_exchange_rate'];
+        $attributes['contact']['currencies'] = $attributes['contact']['currencies_and_exchange_rates'];
+
+        $attributes['taxes'] = json_decode('{}');
+        $attributes['memo'] = null;
+        $attributes['terms_and_conditions'] = null;
+
+        foreach ($attributes['items'] as $key => $item)
+        {
+            $selectedItem = [
+                'id' => $item['item_id'],
+                'name' => $item['name'],
+                'description' => $item['description'],
+                'rate' => $item['rate'],
+                'tax_method' => 'inclusive',
+                'account_type' => null,
+            ];
+
+            $attributes['items'][$key]['selectedItem'] = $selectedItem; #required
+            $attributes['items'][$key]['selectedTaxes'] = []; #required
+            $attributes['items'][$key]['displayTotal'] = 0; #required
+            $attributes['items'][$key]['rate'] = floatval($item['rate']);
+            $attributes['items'][$key]['quantity'] = floatval($item['quantity']);
+            $attributes['items'][$key]['total'] = floatval($item['total']);
+            $attributes['items'][$key]['displayTotal'] = $item['total']; #required
+
+            foreach ($item['taxes'] as $itemTax)
+            {
+                $attributes['items'][$key]['selectedTaxes'][] = $taxes[$itemTax['tax_code']];
+            }
+        };
+
+        return $attributes;
+    }
+
+    public static function approve($id)
+    {
+        $Txn = Estimate::findOrFail($id);
+
+        if (strtolower($Txn->status) != 'draft')
+        {
+            self::$errors[] = $Txn->status . ' transaction cannot be approved';
+            return false;
+        }
+
+        $data = $Txn->toArray();
+
+        //start database transaction
+        DB::connection('tenant')->beginTransaction();
+
+        try
+        {
+            ApprovalService::run($data);
+
+            //update the status of the txn
+            $Txn->status = 'Approved';
+            $Txn->save();
+
+            DB::connection('tenant')->commit();
+
+            return true;
+        }
+        catch (\Throwable $e)
+        {
+            //print_r($e); exit;
+
+            DB::connection('tenant')->rollBack();
+
+            if (App::environment('local'))
+            {
+                self::$errors[] = 'DB Error: Failed to approve transaction.';
+                self::$errors[] = 'File: ' . $e->getFile();
+                self::$errors[] = 'Line: ' . $e->getLine();
+                self::$errors[] = 'Message: ' . $e->getMessage();
+            }
+            else
+            {
+                self::$errors[] = 'Fatal Internal Error: Failed to approve transaction. Please contact Admin';
+            }
+
+            return false;
+        }
+    }
+
 }
