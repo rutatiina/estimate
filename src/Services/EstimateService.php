@@ -128,7 +128,7 @@ class EstimateService
             //print_r($data['items']); exit;
 
             //Save the items >> $data['items']
-            SalesOrderItemService::store($data);
+            EstimateItemService::store($data);
 
             //check status and update financial account and contact balances accordingly
             ApprovalService::run($data);
@@ -230,7 +230,7 @@ class EstimateService
             //print_r($data['items']); exit;
 
             //Save the items >> $data['items']
-            SalesOrderItemService::store($data);
+            EstimateItemService::store($data);
 
             //check status and update financial account and contact balances accordingly
             ApprovalService::run($data);
