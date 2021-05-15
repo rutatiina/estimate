@@ -117,7 +117,7 @@ class EstimateService
             $Txn->branch_id = $data['branch_id'];
             $Txn->store_id = $data['store_id'];
             $Txn->expiry_date = $data['expiry_date'];
-            $Txn->memo = $data['memo'];
+            $Txn->contact_notes = $data['contact_notes'];
             $Txn->terms_and_conditions = $data['terms_and_conditions'];
             $Txn->status = $data['status'];
 
@@ -219,7 +219,7 @@ class EstimateService
             $Txn->branch_id = $data['branch_id'];
             $Txn->store_id = $data['store_id'];
             $Txn->expiry_date = $data['expiry_date'];
-            $Txn->memo = $data['memo'];
+            $Txn->contact_notes = $data['contact_notes'];
             $Txn->terms_and_conditions = $data['terms_and_conditions'];
             $Txn->status = $data['status'];
 
@@ -342,7 +342,7 @@ class EstimateService
         $attributes['contact']['currencies'] = $txn->contact->currencies_and_exchange_rates;
 
         $attributes['taxes'] = json_decode('{}');
-        $attributes['memo'] = null;
+        $attributes['contact_notes'] = null;
         $attributes['terms_and_conditions'] = null;
 
         foreach ($attributes['items'] as $key => $item)
