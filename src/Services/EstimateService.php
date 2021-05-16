@@ -119,7 +119,6 @@ class EstimateService
             $Txn->expiry_date = $data['expiry_date'];
             $Txn->contact_notes = $data['contact_notes'];
             $Txn->terms_and_conditions = $data['terms_and_conditions'];
-            $Txn->status = $data['status'];
 
             $Txn->save();
 
@@ -131,7 +130,15 @@ class EstimateService
             EstimateItemService::store($data);
 
             //check status and update financial account and contact balances accordingly
-            ApprovalService::run($data);
+            $approvalService = ApprovalService::run($data);
+
+            //update the status of the txn
+            if ($approvalService)
+            {
+                $Txn->status = 'Approved';
+                $Txn->balances_where_updated = 1;
+                $Txn->save();
+            }
 
             DB::connection('tenant')->commit();
 
@@ -221,7 +228,6 @@ class EstimateService
             $Txn->expiry_date = $data['expiry_date'];
             $Txn->contact_notes = $data['contact_notes'];
             $Txn->terms_and_conditions = $data['terms_and_conditions'];
-            $Txn->status = $data['status'];
 
             $Txn->save();
 
@@ -233,7 +239,15 @@ class EstimateService
             EstimateItemService::store($data);
 
             //check status and update financial account and contact balances accordingly
-            ApprovalService::run($data);
+            $approvalService = ApprovalService::run($data);
+
+            //update the status of the txn
+            if ($approvalService)
+            {
+                $Txn->status = 'Approved';
+                $Txn->balances_where_updated = 1;
+                $Txn->save();
+            }
 
             DB::connection('tenant')->commit();
 
@@ -390,11 +404,16 @@ class EstimateService
 
         try
         {
-            ApprovalService::run($data);
+            $data['status'] = 'Approved';
+            $approvalService = ApprovalService::run($data);
 
             //update the status of the txn
-            $Txn->status = 'Approved';
-            $Txn->save();
+            if ($approvalService)
+            {
+                $Txn->status = 'Approved';
+                $Txn->balances_where_updated = 1;
+                $Txn->save();
+            }
 
             DB::connection('tenant')->commit();
 
