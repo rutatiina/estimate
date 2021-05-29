@@ -30,10 +30,7 @@ class CreateRgEstimatesTable extends Migration
             $table->string('external_key', 100)->nullable();
             $table->unsignedBigInteger('app_id')->nullable();
             $table->string('document_name', 50)->default('Quotation');
-            $table->string('number_prefix', 50)->nullable();
-            $table->unsignedBigInteger('number');
-            $table->unsignedTinyInteger('number_length');
-            $table->string('number_postfix', 50)->nullable();
+            $table->string('number', 250);
             $table->date('date');
             $table->time('time')->nullable();
             $table->unsignedBigInteger('financial_account_code')->nullable(); //this is a non accounting entry so no need for debit or credit

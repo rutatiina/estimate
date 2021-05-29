@@ -56,14 +56,6 @@ class EstimateController extends Controller
         ];
     }
 
-    private function nextNumber()
-    {
-        $txn = Estimate::latest()->first();
-        $settings = Setting::first();
-
-        return $settings->number_prefix . (str_pad((optional($txn)->number + 1), $settings->minimum_number_length, "0", STR_PAD_LEFT)) . $settings->number_postfix;
-    }
-
     public function create()
     {
         //load the vue version of the app
@@ -76,7 +68,7 @@ class EstimateController extends Controller
 
         $txnAttributes = (new Estimate)->rgGetAttributes();
 
-        $txnAttributes['number'] = $this->nextNumber();
+        $txnAttributes['number'] = EstimateService::nextNumber();
 
         $txnAttributes['status'] = 'Approved';
         //$txnAttributes['contact_id'] = null;
@@ -95,7 +87,27 @@ class EstimateController extends Controller
         ];
         $txnAttributes['contact_notes'] = null;
         $txnAttributes['terms_and_conditions'] = null;
-        $txnAttributes['items'] = [$this->itemCreate()];
+        $txnAttributes['items'] = [
+            [
+                'selectedTaxes' => [], #required
+                'selectedItem' => json_decode('{}'), #required
+                'displayTotal' => 0,
+                'name' => '',
+                'description' => '',
+                'rate' => 0,
+                'quantity' => 1,
+                'total' => 0,
+                'taxable_amount' => 0,
+                'taxes' => [],
+
+                'item_id' => '',
+                'contact_id' => '',
+                'tax_id' => '',
+                'units' => '',
+                'batch' => '',
+                'expiry' => ''
+            ]
+        ];
 
         unset($txnAttributes['txn_entree_id']); //!important
         unset($txnAttributes['txn_type_id']); //!important

@@ -95,6 +95,11 @@ class Estimate extends Model
         return $attributes;
     }
 
+    public function setStatusAttribute($value)
+    {
+        $this->attributes['status'] = strtolower($value);
+    }
+
     public function getContactAddressArrayAttribute()
     {
         return preg_split("/\r\n|\n|\r/", $this->contact_address);

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Rutatiina\Estimate\Models\Estimate;
 use Rutatiina\Estimate\Models\EstimateItem;
 use Rutatiina\Estimate\Models\EstimateItemTax;
+use Rutatiina\Estimate\Models\Setting;
 use Rutatiina\FinancialAccounting\Services\AccountBalanceUpdateService;
 use Rutatiina\FinancialAccounting\Services\ContactBalanceUpdateService;
 use Rutatiina\Tax\Models\Tax;
@@ -20,6 +21,14 @@ class EstimateService
     public function __construct()
     {
         //
+    }
+
+    public static function nextNumber()
+    {
+        $count = Estimate::count();
+        $settings = Setting::first();
+
+        return $settings->number_prefix . (str_pad(($count + 1), $settings->minimum_number_length, "0", STR_PAD_LEFT)) . $settings->number_postfix;
     }
 
     public static function edit($id)
@@ -40,15 +49,6 @@ class EstimateService
         $attributes['contact']['currencies'] = $txn->contact->currencies_and_exchange_rates;
 
         $attributes['taxes'] = json_decode('{}');
-        $attributes['isRecurring'] = false;
-        $attributes['recurring'] = [
-            'date_range' => [],
-            'day_of_month' => '*',
-            'month' => '*',
-            'day_of_week' => '*',
-        ];
-        $attributes['contact_notes'] = null;
-        $attributes['terms_and_conditions'] = null;
 
         foreach ($attributes['items'] as $key => $item)
         {
@@ -98,11 +98,9 @@ class EstimateService
             $Txn = new Estimate;
             $Txn->tenant_id = $data['tenant_id'];
             $Txn->created_by = Auth::id();
+            $Txn->status = $data['status'];
             $Txn->document_name = $data['document_name'];
-            $Txn->number_prefix = $data['number_prefix'];
             $Txn->number = $data['number'];
-            $Txn->number_length = $data['number_length'];
-            $Txn->number_postfix = $data['number_postfix'];
             $Txn->date = $data['date'];
             $Txn->financial_account_code = $data['financial_account_code'];
             $Txn->contact_id = $data['contact_id'];
@@ -135,7 +133,7 @@ class EstimateService
             //update the status of the txn
             if ($approvalService)
             {
-                $Txn->status = 'Approved';
+                $Txn->status = 'approved';
                 $Txn->balances_where_updated = 1;
                 $Txn->save();
             }
@@ -188,7 +186,7 @@ class EstimateService
         {
             $Txn = Estimate::with('items')->findOrFail($data['id']);
 
-            if ($Txn->status == 'Approved')
+            if ($Txn->status == 'approved')
             {
                 self::$errors[] = 'Approved Transaction cannot be not be edited';
                 return false;
@@ -208,10 +206,7 @@ class EstimateService
             $Txn->tenant_id = $data['tenant_id'];
             $Txn->created_by = Auth::id();
             $Txn->document_name = $data['document_name'];
-            $Txn->number_prefix = $data['number_prefix'];
             $Txn->number = $data['number'];
-            $Txn->number_length = $data['number_length'];
-            $Txn->number_postfix = $data['number_postfix'];
             $Txn->date = $data['date'];
             $Txn->financial_account_code = $data['financial_account_code'];
             $Txn->contact_id = $data['contact_id'];
@@ -244,7 +239,7 @@ class EstimateService
             //update the status of the txn
             if ($approvalService)
             {
-                $Txn->status = 'Approved';
+                $Txn->status = 'approved';
                 $Txn->balances_where_updated = 1;
                 $Txn->save();
             }
@@ -288,7 +283,7 @@ class EstimateService
         {
             $Txn = Estimate::findOrFail($id);
 
-            if ($Txn->status == 'Approved')
+            if ($Txn->status == 'approved')
             {
                 self::$errors[] = 'Approved Transaction cannot be not be deleted';
                 return false;
@@ -348,6 +343,7 @@ class EstimateService
         $attributes = $txn->toArray();
 
         #reset some values
+        $attributes['number'] = self::nextNumber();
         $attributes['date'] = date('Y-m-d');
         $attributes['expiry_date'] = '';
         #reset some values
@@ -356,8 +352,6 @@ class EstimateService
         $attributes['contact']['currencies'] = $txn->contact->currencies_and_exchange_rates;
 
         $attributes['taxes'] = json_decode('{}');
-        $attributes['contact_notes'] = null;
-        $attributes['terms_and_conditions'] = null;
 
         foreach ($attributes['items'] as $key => $item)
         {
@@ -404,13 +398,13 @@ class EstimateService
 
         try
         {
-            $data['status'] = 'Approved';
+            $data['status'] = 'approved';
             $approvalService = ApprovalService::run($data);
 
             //update the status of the txn
             if ($approvalService)
             {
-                $Txn->status = 'Approved';
+                $Txn->status = 'approved';
                 $Txn->balances_where_updated = 1;
                 $Txn->save();
             }
