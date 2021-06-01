@@ -17,5 +17,12 @@
         "psr-4": {
             "Rutatiina\\Estimate\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rutatiina\\Estimate\\EstimateServiceProvider"
+            ]
+        }
     }
 }
