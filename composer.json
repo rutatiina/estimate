@@ -12,6 +12,7 @@
     "minimum-stability": "beta",
     "require": {
         "laravel/framework": "^8.0",
+        "rutatiina/tenant": "*",
         "rutatiina/financial-accounting": "*",
         "rutatiina/tax": "*",
         "rutatiina/contact": "*",
