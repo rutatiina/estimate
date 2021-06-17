@@ -68,8 +68,6 @@ trait Validate
         $data['exchange_rate'] = $this->insertDataDefault('exchange_rate', 1);
 
         $data['contact_id'] = $this->insertDataDefault('contact_id', null);
-        $data['debit_contact_id'] = $this->insertDataDefault('debit_contact_id', $data['contact_id']);
-        $data['credit_contact_id'] = $this->insertDataDefault('credit_contact_id', $data['contact_id']);
         $data['contact_name'] = $this->insertDataDefault('contact_name', null);
         $data['contact_address'] = $this->insertDataDefault('contact_address', null);
 
