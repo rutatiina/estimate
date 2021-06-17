@@ -18,7 +18,7 @@ Route::group(['middleware' => ['web', 'auth', 'tenant', 'service.accounting']], 
 
     Route::get('estimates/vue/blade', 'Rutatiina\Estimate\Http\Controllers\EstimateController@vueAndBlade');
 
-    Route::resource('estimates/settings', 'Rutatiina\Estimate\Http\Controllers\SettingsController');
+    Route::resource('estimates/settings', 'Rutatiina\Estimate\Http\Controllers\EstimateSettingsController');
     Route::resource('estimates', 'Rutatiina\Estimate\Http\Controllers\EstimateController');
 
 });

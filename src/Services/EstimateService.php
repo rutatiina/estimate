@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Rutatiina\Estimate\Models\Estimate;
 use Rutatiina\Estimate\Models\EstimateItem;
 use Rutatiina\Estimate\Models\EstimateItemTax;
-use Rutatiina\Estimate\Models\Setting;
+use Rutatiina\Estimate\Models\EstimateSetting;
 use Rutatiina\FinancialAccounting\Services\AccountBalanceUpdateService;
 use Rutatiina\FinancialAccounting\Services\ContactBalanceUpdateService;
 use Rutatiina\Tax\Models\Tax;
@@ -26,7 +26,7 @@ class EstimateService
     public static function nextNumber()
     {
         $count = Estimate::count();
-        $settings = Setting::first();
+        $settings = EstimateSetting::first();
 
         return $settings->number_prefix . (str_pad(($count + 1), $settings->minimum_number_length, "0", STR_PAD_LEFT)) . $settings->number_postfix;
     }

@@ -5,7 +5,7 @@ namespace Rutatiina\Estimate\Traits;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Rutatiina\Contact\Models\Contact;
-use Rutatiina\Estimate\Models\Setting;
+use Rutatiina\Estimate\Models\EstimateSetting;
 use Rutatiina\Tax\Models\Tax;
 use Rutatiina\Estimate\Models\Estimate;
 
@@ -128,7 +128,7 @@ trait Validate
 
         // << data validation <<------------------------------------------------------------
 
-        $this->settings = Setting::has('financial_account')->with(['financial_account'])->firstOrFail();
+        $this->settings = EstimateSetting::has('financial_account')->with(['financial_account'])->firstOrFail();
         //Log::info($this->settings);
 
 

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Rutatiina\Estimate\Models\Estimate;
-use Rutatiina\Estimate\Models\Setting;
+use Rutatiina\Estimate\Models\EstimateSetting;
 use Rutatiina\FinancialAccounting\Traits\FinancialAccountingTrait;
 use Rutatiina\Item\Traits\ItemsVueSearchSelect;
 use Yajra\DataTables\Facades\DataTables;

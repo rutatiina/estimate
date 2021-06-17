@@ -4,7 +4,7 @@ namespace Rutatiina\Estimate\Services;
 
 use Illuminate\Support\Facades\Validator;
 use Rutatiina\Contact\Models\Contact;
-use Rutatiina\Estimate\Models\Setting;
+use Rutatiina\Estimate\Models\EstimateSetting;
 
 class ValidateService
 {
@@ -58,7 +58,7 @@ class ValidateService
 
         // << data validation <<------------------------------------------------------------
 
-        $settings = Setting::has('financial_account')->with(['financial_account'])->firstOrFail();
+        $settings = EstimateSetting::has('financial_account')->with(['financial_account'])->firstOrFail();
         //Log::info($this->settings);
 
 
