@@ -126,16 +126,8 @@ class EstimateService
             //Save the items >> $data['items']
             EstimateItemService::store($data);
 
-            //check status and update financial account and contact balances accordingly
-            $approvalService = ApprovalService::run($data);
-
-            //update the status of the txn
-            if ($approvalService)
-            {
-                $Txn->status = 'approved';
-                $Txn->balances_where_updated = 1;
-                $Txn->save();
-            }
+            //check status and update balances accordingly
+            EstimateBalanceService::update($Txn);
 
             DB::connection('tenant')->commit();
 
