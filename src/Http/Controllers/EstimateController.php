@@ -35,7 +35,7 @@ class EstimateController extends Controller
         //load the vue version of the app
         if (!FacadesRequest::wantsJson())
         {
-            return view('l-limitless-bs4.layout_2-ltr-default.appVue');
+            return view('ui.limitless::layout_2-ltr-default.appVue');
         }
 
         $query = Estimate::query();
@@ -60,7 +60,7 @@ class EstimateController extends Controller
         //load the vue version of the app
         if (!FacadesRequest::wantsJson())
         {
-            return view('l-limitless-bs4.layout_2-ltr-default.appVue');
+            return view('ui.limitless::layout_2-ltr-default.appVue');
         }
 
         $tenant = Auth::user()->tenant;
@@ -143,7 +143,7 @@ class EstimateController extends Controller
         //load the vue version of the app
         if (!FacadesRequest::wantsJson())
         {
-            return view('l-limitless-bs4.layout_2-ltr-default.appVue');
+            return view('ui.limitless::layout_2-ltr-default.appVue');
         }
 
         $txn = Estimate::findOrFail($id);
@@ -162,7 +162,7 @@ class EstimateController extends Controller
         //load the vue version of the app
         if (!FacadesRequest::wantsJson())
         {
-            return view('l-limitless-bs4.layout_2-ltr-default.appVue');
+            return view('ui.limitless::layout_2-ltr-default.appVue');
         }
 
         $txnAttributes = EstimateService::edit($id);
@@ -246,7 +246,7 @@ class EstimateController extends Controller
         //load the vue version of the app
         if (!FacadesRequest::wantsJson())
         {
-            return view('l-limitless-bs4.layout_2-ltr-default.appVue');
+            return view('ui.limitless::layout_2-ltr-default.appVue');
         }
 
         $txnAttributes = EstimateService::copy($id);
@@ -280,7 +280,7 @@ class EstimateController extends Controller
         //load the vue version of the app
         if (!FacadesRequest::wantsJson())
         {
-            return view('l-limitless-bs4.layout_2-ltr-default.appVue');
+            return view('ui.limitless::layout_2-ltr-default.appVue');
         }
 
         $txn = Transaction::transaction($id); //print_r($originalTxn); exit;
@@ -423,6 +423,6 @@ class EstimateController extends Controller
 
     public function vueAndBlade(Request $request)
     {
-        return view('l-limitless-bs4.layout_2-ltr-default.vue-and-blade');
+        return view('ui.limitless::layout_2-ltr-default.vue-and-blade');
     }
 }
