@@ -2,18 +2,21 @@
 
 namespace Rutatiina\Estimate\Http\Controllers;
 
-use Rutatiina\Estimate\Services\EstimateService;
-use Illuminate\Support\Facades\URL;
 use Barryvdh\DomPDF\PDF;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Rutatiina\Estimate\Models\Estimate;
-use Rutatiina\Estimate\Models\EstimateSetting;
-use Rutatiina\FinancialAccounting\Traits\FinancialAccountingTrait;
-use Rutatiina\Item\Traits\ItemsVueSearchSelect;
 use Yajra\DataTables\Facades\DataTables;
+use Rutatiina\Estimate\Models\EstimateSetting;
+use Rutatiina\Invoice\Services\InvoiceService;
+use Rutatiina\Item\Traits\ItemsVueSearchSelect;
+use Rutatiina\Estimate\Services\EstimateService;
+use Rutatiina\SalesOrder\Services\SalesOrderService;
+use Illuminate\Support\Facades\Request as FacadesRequest;
+use Rutatiina\RetainerInvoice\Services\RetainerInvoiceService;
+use Rutatiina\FinancialAccounting\Traits\FinancialAccountingTrait;
 
 class EstimateController extends Controller
 {
@@ -261,20 +264,6 @@ class EstimateController extends Controller
         return $data;
     }
 
-    public function datatables(Request $request)
-    {
-        //return $request;
-
-        $txns = Transaction::setRoute('show', route('accounting.sales.estimates.show', '_id_'))
-            ->setRoute('edit', route('accounting.sales.estimates.edit', '_id_'))
-            ->setRoute('process', route('accounting.sales.estimates.process', '_id_'))
-            ->setSortBy($request->sort_by)
-            ->paginate(false)
-            ->findByEntree($this->txnEntreeSlug);
-
-        return Datatables::of($txns)->make(true);
-    }
-
     public function process($id, $processTo)
     {
         //load the vue version of the app
@@ -283,17 +272,18 @@ class EstimateController extends Controller
             return view('ui.limitless::layout_2-ltr-default.appVue');
         }
 
-        $txn = Transaction::transaction($id); //print_r($originalTxn); exit;
+        $txn = Estimate::find($id); //print_r($originalTxn); exit;
 
         if ($txn == false)
         {
             return redirect()->back()->withErrors(['error' => 'Error #E001: Transaction not found']);
         }
 
-        $txnAttributes = Transaction::transactionForEdit($id);
+        $txnAttributes = EstimateService::edit($id);
 
         //check if transaction has been processed before
 
+        $attributes['_method'] = 'POST';
         $txnAttributes['id'] = '';
         $txnAttributes['reference'] = $txn->number;
         $txnAttributes['internal_ref'] = $txn->id;
@@ -306,7 +296,7 @@ class EstimateController extends Controller
 
             case 'retainer-invoices':
 
-                $txnAttributes['number'] = Transaction::entreeNextNumber('retainer_invoice');
+                $txnAttributes['number'] = RetainerInvoiceService::nextNumber();
                 return [
                     'pageTitle' => 'Process Estimate into Retainer Invoice', #required
                     'pageAction' => 'Process Estimate', #required
@@ -317,7 +307,7 @@ class EstimateController extends Controller
 
             case 'sales-orders':
 
-                $txnAttributes['number'] = Transaction::entreeNextNumber('sales_order');
+                $txnAttributes['number'] = SalesOrderService::nextNumber();
                 return [
                     'pageTitle' => 'Process Estimate into Sales Order', #required
                     'pageAction' => 'Process Estimate', #required
@@ -328,7 +318,7 @@ class EstimateController extends Controller
 
             case 'invoice':
 
-                $txnAttributes['number'] = Transaction::entreeNextNumber('invoice');
+                $txnAttributes['number'] = InvoiceService::nextNumber();;
                 return [
                     'pageTitle' => 'Process Estimate into Invoice', #required
                     'pageAction' => 'Process Estimate', #required
@@ -340,7 +330,6 @@ class EstimateController extends Controller
             case 'recurring-invoices':
 
                 $txnAttributes['isRecurring'] = true;
-                $txnAttributes['number'] = Transaction::entreeNextNumber('recurring_invoice');
                 return [
                     'pageTitle' => 'Process Estimate into Recurring Invoice', #required
                     'pageAction' => 'Process Estimate', #required

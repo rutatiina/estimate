@@ -45,8 +45,11 @@ class EstimateService
 
         $attributes['_method'] = 'PATCH';
 
-        $attributes['contact']['currency'] = $txn->contact->currency_and_exchange_rate;
-        $attributes['contact']['currencies'] = $txn->contact->currencies_and_exchange_rates;
+        if ($txn->contact)
+        {
+            $attributes['contact']['currency'] = $txn->contact->currency_and_exchange_rate;
+            $attributes['contact']['currencies'] = $txn->contact->currencies_and_exchange_rates;
+        }
 
         $attributes['taxes'] = json_decode('{}');
 
