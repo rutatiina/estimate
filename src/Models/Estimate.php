@@ -3,11 +3,13 @@
 namespace Rutatiina\Estimate\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Rutatiina\Tenant\Scopes\TenantIdScope;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Estimate extends Model
 {
+    use SoftDeletes;
     use LogsActivity;
 
     protected static $logName = 'Txn';
@@ -56,6 +58,15 @@ class Estimate extends Model
              });
              $txn->comments()->each(function($row) {
                 $row->delete();
+             });
+        });
+
+        self::restored(function($txn) {
+             $txn->items()->each(function($row) {
+                $row->restore();
+             });
+             $txn->comments()->each(function($row) {
+                $row->restore();
              });
         });
 
