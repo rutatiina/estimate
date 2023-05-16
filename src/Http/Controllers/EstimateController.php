@@ -283,7 +283,7 @@ class EstimateController extends Controller
 
         //check if transaction has been processed before
 
-        $attributes['_method'] = 'POST';
+        $txnAttributes['_method'] = 'POST';
         $txnAttributes['id'] = '';
         $txnAttributes['reference'] = $txn->number;
         $txnAttributes['internal_ref'] = $txn->id;
@@ -322,7 +322,7 @@ class EstimateController extends Controller
                 return [
                     'pageTitle' => 'Process Estimate into Invoice', #required
                     'pageAction' => 'Process Estimate', #required
-                    'txnUrlStore' => '/invoice', #required
+                    'txnUrlStore' => '/invoices', #required
                     'txnAttributes' => $txnAttributes, #required
                 ];
                 break;
@@ -330,6 +330,7 @@ class EstimateController extends Controller
             case 'recurring-invoices':
 
                 $txnAttributes['isRecurring'] = true;
+                $txnAttributes['is_recurring'] = true;
                 return [
                     'pageTitle' => 'Process Estimate into Recurring Invoice', #required
                     'pageAction' => 'Process Estimate', #required
